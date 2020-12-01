@@ -6,6 +6,7 @@ cutoff=2
 camx=-.5
 camy=0
 cam_width=2
+colors={1,2,5,4,3,9,13,6,15,14,12,8,11,10,7}
 function mandel(screenx,screeny)
  local x=(screenx/63.5 - 1)
  local y=(screeny/63.5 - 1)
@@ -15,7 +16,7 @@ function mandel(screenx,screeny)
  local zy=0
  for i=1,iterations do
   if abs(zx)+abs(zy) > cutoff then
-   return min(i,15)
+   return colors[1+flr(i/iterations*15+rnd()-.5)]
   end
  
   local next_zx = zx*zx-zy*zy + x
