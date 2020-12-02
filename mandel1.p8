@@ -6,7 +6,10 @@ cutoff=2
 camx=-.5
 camy=0
 cam_width=2
-colors={1,2,5,4,3,9,13,6,15,14,12,8,11,10,7}
+colors={1,2,5,4,3,13,9,8,14,6,15,12,11,10,7}
+zoom_ratio=1.025
+move_amount=1/32
+
 function mandel(screenx,screeny)
  local x=(screenx/63.5 - 1)
  local y=(screeny/63.5 - 1)
@@ -39,27 +42,27 @@ function _update60()
  
  if btn(0) then
   moved=true
-  camx-=cam_width/16
+  camx-=cam_width*move_amount
  end
  if btn(1) then
   moved=true
-  camx+=cam_width/16
+  camx+=cam_width*move_amount
  end
  if btn(2) then
   moved=true
-  camy-=cam_width/16
+  camy-=cam_width*move_amount
  end
  if btn(3) then
   moved=true
-  camy+=cam_width/16
+  camy+=cam_width*move_amount
  end
  if btn(4) then
   moved=true
-  cam_width*=.95
+  cam_width/=zoom_ratio
  end
  if btn(5) then
   moved=true
-  cam_width*=1.05
+  cam_width*=zoom_ratio
  end
 end
 
@@ -68,31 +71,48 @@ redraw_steps={
  {0,1},
  {1,0}
 }
-max_draw_width=16
+max_draw_width=16 // must be power of 2
 draw_width=max_draw_width
 moved=true
-delayer=0
 function _draw()
  if moved then
-  cls()
-  draw_width=max_draw_width
-  for x=0,127,draw_width do
-   for y=0,127,draw_width do
-    rectfill(x,y,x+draw_width-1,y+draw_width-1,mandel(x,y,0,0,iterations))
+  co_draw=cocreate(co_draw_f)
+ end
+ if costatus(co_draw) != "dead" then
+  assert(coresume(co_draw))
+ end
+ //rectfill(0,0,20,6,0)
+ //print(stat(7),0,0,7)
+end
+
+function co_draw_f()
+ cls()
+ moved=false
+ draw_width=max_draw_width
+ 
+ for x=0,127,draw_width do
+  for y=0,127,draw_width do
+   if stat(1) > 0.95 then
+    yield()
    end
+   rectfill(x,y,x+draw_width-1,y+draw_width-1,mandel(x,y,0,0,iterations))
   end
-  
-  draw_width/=2
-  redraw_i=1
-  redraw_col=0
-  redraw_row=0
-  moved=false
- elseif draw_width >= 1 then
+ end
+ 
+ draw_width/=2
+ redraw_i=1
+ redraw_col=0
+ redraw_row=0
+ 
+ while draw_width >= 1 do
   local step=redraw_steps[redraw_i]  
   local xoff=step[1]*draw_width + redraw_col*draw_width*2
   local yoff=step[2]*draw_width + redraw_row*draw_width*2
   for x=xoff,127,max_draw_width do
    for y=yoff,127,max_draw_width do
+    if stat(1) > 0.95 then
+     yield()
+    end
     rectfill(x,y,x+draw_width-1,y+draw_width-1,mandel(x,y,0,0,iterations))
    end
   end
