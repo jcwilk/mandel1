@@ -32,7 +32,26 @@ function mandel(screenx,screeny)
 end
 
 function _init()
+ deactivate_settings()
+ menuitem(2,"toggle debug",toggle_debug)
+ debug_val=0
+end
 
+function activate_settings()
+ menuitem(1,"navigate",deactivate_settings)
+ settings_active=true
+end
+
+function deactivate_settings()
+ menuitem(1,"settings",activate_settings)
+ settings_active=false
+end
+
+function toggle_debug()
+ debug_val+=1
+ if debug_val > 2 then
+  debug_val=0
+ end
 end
 
 function _update60()
@@ -40,21 +59,40 @@ function _update60()
   return
  end
  
- if btn(0) then
-  moved=true
-  camx-=cam_width*move_amount
- end
- if btn(1) then
-  moved=true
-  camx+=cam_width*move_amount
- end
- if btn(2) then
-  moved=true
-  camy-=cam_width*move_amount
- end
- if btn(3) then
-  moved=true
-  camy+=cam_width*move_amount
+ if settings_active then
+  if btn(0) then
+   moved=true
+   iterations/=zoom_ratio
+  end
+  if btn(1) then
+   moved=true
+   iterations*=zoom_ratio
+  end
+  if btn(2) then
+   moved=true
+   cutoff*=zoom_ratio
+  end
+  if btn(3) then
+   moved=true
+   cutoff/=zoom_ratio
+  end
+ else
+  if btn(0) then
+   moved=true
+   camx-=cam_width*move_amount
+  end
+	 if btn(1) then
+   moved=true
+   camx+=cam_width*move_amount
+  end
+  if btn(2) then
+   moved=true
+   camy-=cam_width*move_amount
+  end
+  if btn(3) then
+   moved=true
+   camy+=cam_width*move_amount
+  end
  end
  if btn(4) then
   moved=true
@@ -82,8 +120,16 @@ function _draw()
  if costatus(co_draw) != "dead" then
   assert(coresume(co_draw))
  end
- //rectfill(0,0,20,6,0)
- //print(stat(7),0,0,7)
+ if debug_val < 2 then
+  if debug_val == 1 then
+   rectfill(0,0,80,30,0)
+  end
+  print(camx..","..camy,0,0,7)
+  print("w"..cam_width,0,6,7)
+  print("i"..iterations,0,12,7)
+  print("c"..cutoff,0,18,7)
+  print("f"..stat(7),0,24,7)
+ end
 end
 
 function co_draw_f()
