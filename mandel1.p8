@@ -95,12 +95,18 @@ function _update60()
   end
  end
  if btn(4) then
-  moved=true
-  cam_width/=zoom_ratio
+  new_cam_width=cam_width/zoom_ratio
+  if new_cam_width > 0x0000.0040 then
+   cam_width=new_cam_width
+   moved=true
+  end
  end
  if btn(5) then
-  moved=true
-  cam_width*=zoom_ratio
+  new_cam_width=cam_width*zoom_ratio
+  if new_cam_width > 0 then
+   cam_width=new_cam_width
+   moved=true
+  end
  end
 end
 
