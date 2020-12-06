@@ -3,182 +3,25 @@ version 29
 __lua__
 #include complex.lua
 
-iterations=100
-cutoff=2
-camx=-.5
-camy=0
-cam_width=2
-colors={1,2,5,4,3,13,9,8,14,6,15,12,11,10,7}
-zoom_ratio=1.025
-move_amount=1/32
+a=complex(1,2)+complex(3,4)
+assert(a.x==4)
+assert(a.y==6)
 
-function mandel(screenx,screeny)
- local x=(screenx/63.5 - 1)
- local y=(screeny/63.5 - 1)
- x=camx + x*cam_width/2
- y=camy + y*cam_width/2
- local c=complex(x,y)
- local z=complex(0,0)
- for i=1,iterations do
-  if #z > cutoff then
-   return colors[1+flr(i/iterations*15+rnd()-.5)]
-  end
-  
-  z=z*z+c
- end
- 
- return 0
-end
+a=complex(5,6)-complex(3,2)
+assert(a.x==2)
+assert(a.y==4)
 
-function _init()
- deactivate_settings()
- menuitem(2,"toggle debug",toggle_debug)
- debug_val=0
-end
+a=complex(3,2)*complex(1,7)
+assert(a.x==-11)
+assert(a.y==23)
 
-function activate_settings()
- menuitem(1,"navigate",deactivate_settings)
- settings_active=true
-end
+a=complex(5,2)/complex(7,4)
+assert(a.x==43/65)
+assert(a.y==-6/65)
 
-function deactivate_settings()
- menuitem(1,"settings",activate_settings)
- settings_active=false
-end
+assert(#complex(2,-3)==5)
 
-function toggle_debug()
- debug_val+=1
- if debug_val > 2 then
-  debug_val=0
- end
-end
-
-function _update60()
- if moved then
-  return
- end
- 
- if settings_active then
-  if btn(0) then
-   moved=true
-   iterations/=zoom_ratio
-  end
-  if btn(1) then
-   moved=true
-   iterations*=zoom_ratio
-  end
-  if btn(2) then
-   moved=true
-   cutoff*=zoom_ratio
-  end
-  if btn(3) then
-   moved=true
-   cutoff/=zoom_ratio
-  end
- else
-  if btn(0) then
-   moved=true
-   camx-=cam_width*move_amount
-  end
-	 if btn(1) then
-   moved=true
-   camx+=cam_width*move_amount
-  end
-  if btn(2) then
-   moved=true
-   camy-=cam_width*move_amount
-  end
-  if btn(3) then
-   moved=true
-   camy+=cam_width*move_amount
-  end
- end
- if btn(4) then
-  new_cam_width=cam_width/zoom_ratio
-  if new_cam_width > 0x0000.0040 then
-   cam_width=new_cam_width
-   moved=true
-  end
- end
- if btn(5) then
-  new_cam_width=cam_width*zoom_ratio
-  if new_cam_width > 0 then
-   cam_width=new_cam_width
-   moved=true
-  end
- end
-end
-
-redraw_steps={
- {0,1},
- {1,0},
- {1,1}
-}
-max_draw_width=16 // must be power of 2
-sweep_divides=4
-draw_width=max_draw_width
-moved=true
-function _draw()
- if moved then
-  co_draw=cocreate(co_draw_f)
- end
- if costatus(co_draw) != "dead" then
-  assert(coresume(co_draw))
- end
- if debug_val < 2 then
-  if debug_val == 1 then
-   rectfill(0,0,80,30,0)
-  end
-  print(camx..","..camy,0,0,7)
-  print("w"..cam_width,0,6,7)
-  print("i"..iterations,0,12,7)
-  print("c"..cutoff,0,18,7)
-  print("f"..stat(7),0,24,7)
- end
-end
-
-function co_draw_f()
- cls()
- moved=false
- draw_width=max_draw_width
- 
- for x=0,127,draw_width do
-  for y=0,127,draw_width do
-   if stat(1) > 0.95 then
-    yield()
-   end
-   rectfill(x,y,x+draw_width-1,y+draw_width-1,mandel(x,y,0,0,iterations))
-  end
- end
- 
- draw_width/=2
- redraw_i=1
- redraw_col=0
- redraw_row=0
- 
- while draw_width >= 1 do
-  local step=redraw_steps[redraw_i]  
-
-  for s=0,sweep_divides-1,1 do
-   local xoff=(2*s+step[1])*draw_width
-   local yoff=(step[2])*draw_width
-   for x=xoff,127,draw_width*2*sweep_divides do
-    for y=yoff,127,draw_width*2 do
-     if stat(1) > 0.95 then
-      yield()
-     end
-     rectfill(x,y,x+draw_width-1,y+draw_width-1,mandel(x,y,0,0,iterations))
-    end
-   end
-  end
-  redraw_i+=1
-  
-  if redraw_i > #redraw_steps then
-   redraw_i=1
-   draw_width/=2
-  end
- end
-end
+print("all good!")
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
