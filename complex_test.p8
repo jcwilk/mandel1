@@ -3,23 +3,27 @@ version 29
 __lua__
 #include complex.lua
 
-a=complex(1,2)+complex(3,4)
-assert(a.x==4)
-assert(a.y==6)
+a=complex({1,0x7fff.ffff,5},{2,3,2})+complex({3,0x0.0003},{4,20})
+assert(a.x[1]==0x4.0001)
+assert(a.y[1]==6)
+assert(a.x[2]==0x0.0002)
+assert(a.y[2]==23)
+assert(a.x[3]==5)
+assert(a.y[3]==2)
 
-a=complex(5,6)-complex(3,2)
-assert(a.x==2)
-assert(a.y==4)
+//a=complex(5,6)-complex(3,2)
+//assert(a.x==2)
+//assert(a.y==4)
 
-a=complex(3,2)*complex(1,7)
-assert(a.x==-11)
-assert(a.y==23)
+//a=complex(3,2)*complex(1,7)
+//assert(a.x==-11)
+//assert(a.y==23)
 
-a=complex(5,2)/complex(7,4)
-assert(a.x==43/65)
-assert(a.y==-6/65)
+//a=complex(5,2)/complex(7,4)
+//assert(a.x==43/65)
+//assert(a.y==-6/65)
 
-assert(#complex(2,-3)==5)
+//assert(#complex(2,-3)==5)
 
 print("all good!")
 __gfx__
