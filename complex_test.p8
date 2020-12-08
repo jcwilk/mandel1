@@ -15,9 +15,16 @@ assert(a.y[3]==2)
 //assert(a.x==2)
 //assert(a.y==4)
 
-//a=complex(3,2)*complex(1,7)
-//assert(a.x==-11)
-//assert(a.y==23)
+a=complex({3},{2})*complex({1},{7})
+assert(a.x[1]==-11)
+assert(a.y[1]==23)
+
+a=complex({0x0.002},{0})*complex({0x0.002},{0})
+assert(a.x[1]==0)
+assert(a.x[2]==0x0200)
+
+a=complex({0,0x100},{0,0})*complex({0,0x100},{0,0})
+assert(a.x[2]==0x0.0001)
 
 //a=complex(5,2)/complex(7,4)
 //assert(a.x==43/65)
