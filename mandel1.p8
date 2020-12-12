@@ -3,7 +3,7 @@ version 29
 __lua__
 #include complex.lua
 
-iterations=100
+iterations=20
 cutoff=2
 camx=-.5
 camy=0
@@ -17,8 +17,8 @@ function mandel(screenx,screeny)
  local y=(screeny/63.5 - 1)
  x=camx + x*cam_width/2
  y=camy + y*cam_width/2
- local c=complex(x,y)
- local z=complex(0,0)
+ local c=complex({x},{y})
+ local z=complex({0},{0},1)
  for i=1,iterations do
   if #z > cutoff then
    return colors[1+flr(i/iterations*15+rnd()-.5)]
@@ -164,7 +164,7 @@ function co_draw_f()
    local yoff=(step[2])*draw_width
    for x=xoff,127,draw_width*2*sweep_divides do
     for y=yoff,127,draw_width*2 do
-     if stat(1) > 0.95 then
+     if stat(1) > 0.9 then
       yield()
      end
      rectfill(x,y,x+draw_width-1,y+draw_width-1,mandel(x,y,0,0,iterations))

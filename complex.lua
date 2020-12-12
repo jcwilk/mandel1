@@ -91,8 +91,8 @@ complex_meta={
    a=abs(a)
    b=abs(b)
 
-   tempa=a<<8
-   tempb=b<<8
+   tempa=(a<<8)&0x7fff.ffff
+   tempb=(b<<8)&0x7fff.ffff
    tempres=tempa*tempb //sign is 0
 
    //carry right
