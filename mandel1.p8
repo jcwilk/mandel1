@@ -64,11 +64,11 @@ function _update60()
  if settings_active then
   if btn(0) then
    moved=true
-   iterations*=inverse_zoom_ratio
+   iterations/=zoom_ratio.x[1]
   end
   if btn(1) then
    moved=true
-   iterations*=zoom_ratio
+   iterations*=zoom_ratio.x[1]
   end
   if btn(2) then
    moved=true
