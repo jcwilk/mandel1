@@ -5,20 +5,23 @@ __lua__
 
 iterations=20
 cutoff=2
-camx=-.5
-camy=0
-cam_width=2
+camxy=complex({-.5},{0})
+cam_width=complex({2},{0})
 colors={1,2,5,4,3,13,9,8,14,6,15,12,11,10,7}
-zoom_ratio=1.025
+zoom_ratio=complex({1.025},{0})
+inverse_zoom_ratio=complex({1/1.025},{0})
 move_amount=1/32
 
+scren_mult=complex({1/63.5},{0})
+complex_neg_one=complex({-1},{0})
+complex_half=complex({1/2},{0})
 function mandel(screenx,screeny)
- local x=(screenx/63.5 - 1)
- local y=(screeny/63.5 - 1)
- x=camx + x*cam_width/2
- y=camy + y*cam_width/2
- local c=complex({x},{y})
- local z=complex({0},{0},1)
+ local x=screenx/63.5-1
+ local y=screeny/63.5-1
+ local xoffsets=(complex({x/2},{0})*cam_width).x
+ local yoffsets=(complex({y/2},{0})*cam_width).x
+ local c=camxy+complex(xoffsets,yoffsets)
+ local z=complex({0},{0},#cam_width.x)
  for i=1,iterations do
   if #z > cutoff then
    return colors[1+flr(i/iterations*15+rnd()-.5)]
@@ -61,7 +64,7 @@ function _update60()
  if settings_active then
   if btn(0) then
    moved=true
-   iterations/=zoom_ratio
+   iterations*=inverse_zoom_ratio
   end
   if btn(1) then
    moved=true
@@ -69,40 +72,37 @@ function _update60()
   end
   if btn(2) then
    moved=true
-   cutoff*=zoom_ratio
+   cutoff*=zoom_ratio.x[1]
   end
   if btn(3) then
    moved=true
-   cutoff/=zoom_ratio
+   cutoff/=zoom_ratio.x[1]
   end
  else
   if btn(0) then
    moved=true
-   camx-=cam_width*move_amount
+   camxy+=complex_neg_one*cam_width*complex({move_amount},{0})
   end
 	 if btn(1) then
    moved=true
-   camx+=cam_width*move_amount
+   camxy+=cam_width*complex({move_amount},{0})
   end
   if btn(2) then
    moved=true
-   camy-=cam_width*move_amount
+   camxy+=complex_neg_one*cam_width*complex({0},{move_amount})
   end
   if btn(3) then
    moved=true
-   camy+=cam_width*move_amount
+   camxy+=cam_width*complex({0},{move_amount})
   end
  end
  if btn(4) then
-  new_cam_width=cam_width/zoom_ratio
-  if new_cam_width > 0x0000.0040 then
-   cam_width=new_cam_width
-   moved=true
-  end
+  cam_width*=inverse_zoom_ratio
+  moved=true
  end
  if btn(5) then
   new_cam_width=cam_width*zoom_ratio
-  if new_cam_width > 0 then
+  if new_cam_width.x[1] > 0 then
    cam_width=new_cam_width
    moved=true
   end
@@ -129,8 +129,8 @@ function _draw()
   if debug_val == 1 then
    rectfill(0,0,80,30,0)
   end
-  print(camx..","..camy,0,0,7)
-  print("w"..cam_width,0,6,7)
+  print(camxy.x[1]..","..camxy.y[1],0,0,7)
+  print("w"..cam_width.x[1],0,6,7)
   print("i"..iterations,0,12,7)
   print("c"..cutoff,0,18,7)
   print("f"..stat(7),0,24,7)
